@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+      #box{
+            height: 100px;
+            width: 100px;
+          background-color: pink;
+      }
+     
+    
+    </style>
+</head>
+<body>
+    <script src="./jquery-1.12.4.min.js" ></script>
+        <ul id="myul">
+            <li>1</li>
+            <li>2</li>
+            <li>
+                <ul>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ul>            
+
+
+       <div id="box"></div>
+     <button id="but">点击</button>
+    <script>
+        $('#myul>li').css('backgroundColor','red');
+     
+
+    //  var box=document.getElementById('box');
+    //  var $box=$('#box')    
+// console.dir(box);
+// console.log($box);
+    // $("#but").click(function(){
+        // $('#box').text("你还哦啊");
+
+    // });
+ 
+
+    
+    
+    
+    </script>
+</body>
+</html>

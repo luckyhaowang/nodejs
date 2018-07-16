@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style type="text/css">
+    * {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      border: 0;
+    }
+    
+    .all {
+      width: 500px;
+      height: 200px;
+      padding: 7px;
+      border: 1px solid #ccc;
+      margin: 100px auto;
+      position: relative;
+    }
+    
+    .screen {
+      width: 500px;
+      height: 200px;
+      /*overflow: hidden;*/
+      position: relative;
+    }
+    
+    .screen li {
+      width: 500px;
+      height: 200px;
+      overflow: hidden;
+      float: left;
+    }
+    
+    .screen ul {
+      position: absolute;
+      left: 0;
+      top: 0px;
+      width: 3000px;
+    }
+    
+    .all ol {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      line-height: 20px;
+      text-align: center;
+    }
+    
+    .all ol li {
+      float: left;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    
+    .all ol li.current {
+      background: yellow;
+    }
+    
+    #arr {
+      display: none;
+    }
+    
+    #arr span {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      left: 5px;
+      top: 50%;
+      margin-top: -20px;
+      background: #000;
+      cursor: pointer;
+      line-height: 40px;
+      text-align: center;
+      font-weight: bold;
+      font-family: '黑体';
+      font-size: 30px;
+      color: #fff;
+      opacity: 0.3;
+      border: 1px solid #fff;
+    }
+    
+    #arr #right {
+      right: 5px;
+      left: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="all" id='box'>
+  <div class="screen">
+    <ul>
+      <li><img src="images/1.jpg" width="500" height="200"/></li>
+      <li><img src="images/1.jpg" width="500" height="200"/></li>
+      <li><img src="images/1.jpg" width="500" height="200"/></li>
+      <li><img src="images/1.jpg" width="500" height="200"/></li>
+      <li><img src="images/1.jpg" width="500" height="200"/></li>
+    </ul>
+    <ol>
+      <!-- 动态创建的小方块，添加在这里，样式已经给写好了-->
+    </ol>
+  </div>
+  <div id="arr"><span id="left">&lt;</span><span id="right">&gt;</span></div>
+</div>
+<!-- <script src="move.js"></script> -->
+<script>
+  // 步骤：
+  // 1 根据顶部ul中li的个数创建底部小方块
+  // 2 制作简单轮播图效果
+  // 3 制作左右焦点图效果
+  // 4 将前两个效果结合
+  // 5 其他
+
+  // 实现：
+  // 1 获取元素
+  var box = document.getElementById('box');
+  var screenBox = box.children[0]; // 可视区域
+  var imgWidth = screenBox.offsetWidth; // 图片宽度
+  var ul = screenBox.children[0];
+  var lisUl = ul.children;
+  var ol = screenBox.children[1];
+  var lisOl = ol.children;
+  var arrBox = box.children[1];
+  var arrLeft = arrBox.children[0];
+  var arrRight = arrBox.children[1];
+
+
+  // 2 创建结构
+  for (var i = 0; i < lisUl.length; i++) {
+    var li = document.createElement('li');
+    ol.appendChild(li);
+    li.innerText = i + 1;
+  }
+
+  // 3 设置按钮的操作
+  // 3.1 设置第一个小方块的默认类名
+  lisOl[0].className = 'current';
+  // 3.2 简单轮播图功能
+  for (i = 0; i < lisOl.length; i++) {
+    lisOl[i].setAttribute('data-index', i);
+    lisOl[i].onclick = function () {
+      // 根据当前按钮索引设置ul运动位置: -索引 * 图宽
+      var index = this.getAttribute('data-index');
+      move(ul, -index * imgWidth);
+      for (var i = 0; i < lisOl.length; i++) {
+        lisOl[i].className = '';
+      }
+      this.className = 'current';
+
+      // --- 后期添加：为了让左右功能和小方块功能同步，在点击方块时将索引设置给count
+      count = +index; // 设置转换，确保count值的数据类型
+    };
+  }
+
+  // 4 左右按钮操作
+  // 4.1 设置变量计数
+  var count = 0;
+  arrRight.onclick = function () {
+    count++;
+    move(ul, -count * imgWidth);
+    // 由于要显示的方块的索引与count值相同，可以利用count作为索引获取对应的方块
+    for (var i = 0; i < lisOl.length; i++) {
+      lisOl[i].className = '';
+    }
+    lisOl[count].className = 'current';
+  };
+  arrLeft.onclick = function () {
+    count--;
+    move(ul, -count * imgWidth);
+    // 由于要显示的方块的索引与count值相同，可以利用count作为索引获取对应的方块
+    for (var i = 0; i < lisOl.length; i++) {
+      lisOl[i].className = '';
+    }
+    lisOl[count].className = 'current';
+  };
+
+
+  // 5 自动播放
+  box.onmouseover = function () {
+    arrBox.style.display = 'block';
+  };
+  box.onmouseout = function () {
+    arrBox.style.display = 'none';
+  };
+
+function move (element, target) {
+			// 我们将定时器的标识保存到元素的属性(自定义)中，好处：1 多个元素的属性无关 2 一个元素的属性可以多次访问
+			clearInterval(element.timer); // 防止加速
+			element.timer = setInterval(function () {
+				// 1 获取元素当前位置
+				var current = element.offsetLeft;
+				// 2 设置步长公式：(目标位置 - 当前位置) / 10
+				var step = (target - current) / 10;
+				// 设置检测，根据step的正负设置不同的取整方式
+				step = step > 0 ? Math.ceil(step) : Math.floor(step);
+
+				// 3 套用运动公式：元素的位置(新) = 元素的位置(旧) + 步长
+				current += step;
+				// 4 将新的位置值设置给left属性
+				element.style.left = current + 'px';
+
+				// 5 清除定时器
+				if (current === target) {
+					clearInterval(element.timer);
+				}
+			}, 20);
+		}
+
+
+
+
+
+</script>
+
+</body>
+</html>
